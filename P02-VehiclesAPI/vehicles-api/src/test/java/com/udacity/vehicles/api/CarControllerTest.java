@@ -116,6 +116,23 @@ public class CarControllerTest {
         mvc.perform(delete(new URI("/cars/1"))).andExpect(status().isNoContent());
     }
 
+    @Test
+    public void updateCar() throws Exception {
+        Car updatedCar = getCar();
+        updatedCar.setCondition(Condition.NEW);
+        updatedCar.setId(2L);
+
+        given(carService.save(any())).willReturn(updatedCar);
+
+        mvc.perform(put(new URI("/cars/2"))
+                        .content(json.write(updatedCar).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(2)))
+                .andExpect(jsonPath("$.condition", is(Condition.NEW.name())));
+    }
+
     /**
      * Creates an example Car object for use in testing.
      * @return an example Car object
